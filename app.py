@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MARKETS_FILE = os.path.join(BASE_DIR, "data", "markets.csv")
-ZIP_FILE = os.path.join(BASE_DIR, "data", "zip_codes.csv")
+ZIP_FILE = os.path.join(BASE_DIR, "data", "uszips.csv")
 
 # ---------------------------
 # Utility Functions
@@ -32,23 +32,31 @@ def load_zip_latlon(zip_code):
         reader = csv.DictReader(f)
         for row in reader:
             if row["zip"] == zip_code:
-                return float(row["lat"]), float(row["lon"])
+                return float(row["lat"]), float(row["lng"])
     return None
-
 
 def load_markets():
     markets = []
-    with open(MARKETS_FILE, newline='', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter="\t")
+    with open(MARKETS_FILE, newline='', encoding="cp1252") as f:
+        reader = csv.DictReader(f, delimiter=",")
         for row in reader:
-            if row["location_x"] and row["location_y"]:
-                markets.append({
-                    "name": row["listing_name"],
-                    "address": row["location_address"],
-                    "lat": float(row["location_y"]),
-                    "lon": float(row["location_x"]),
-                    "desc": row["location_desc"]
-                })
+            # Clean lat/lon strings: remove whitespace and trailing commas
+            lat_str = row.get("location_y", "").strip().rstrip(',')
+            lon_str = row.get("location_x", "").strip().rstrip(',')
+            
+            if lat_str and lon_str:
+                try:
+                    markets.append({
+                        "name": row.get("listing_name", "").strip(),
+                        # Strip extra quotes from addresses
+                        "address": row.get("location_address", "").strip().strip('"'),
+                        "lat": float(lat_str),
+                        "lon": float(lon_str),
+                        "desc": row.get("location_desc", "").strip()
+                    })
+                except ValueError:
+                    # Skip rows with invalid numbers
+                    print(f"Skipping invalid row: {row}")
     return markets
 
 # ---------------------------
