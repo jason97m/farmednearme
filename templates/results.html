@@ -1,0 +1,21 @@
+<h2>Farmers Markets Near {{ location }}</h2>
+
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+
+<ul>
+{% for m in markets %}
+    <li>
+        <strong>
+            <a href="/market/{{ m.listing_id }}">
+                {{ m.listing_name }}
+            </a>
+        </strong><br>
+        {{ m.location_address }}<br>
+        {{ m.distance }} miles away
+    </li>
+{% endfor %}
+</ul>
+
+<a href="/">Search again</a>

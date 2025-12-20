@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Farmed Near Me</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h1>Farmed Near Me 🌽</h1>
+
+<form method="POST">
+    <input type="text" name="zip" placeholder="Enter ZIP code" required>
+    <button type="submit">Find Markets</button>
+</form>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+{% if results %}
+<h2>Nearby Farmers Markets</h2>
+<ul>
+    {% for m in results %}
+    <li>
+        <strong>{{ m.name }}</strong><br>
+        {{ m.address }}<br>
+        {{ m.distance }} miles away
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+</body>
+</html>

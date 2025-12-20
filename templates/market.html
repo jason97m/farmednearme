@@ -1,0 +1,30 @@
+<h1>{{ market.listing_name }}</h1>
+
+<p><strong>Address:</strong><br>
+{{ market.location_address }}</p>
+
+{% if market.location_desc %}
+<p><strong>Description:</strong><br>
+{{ market.location_desc }}</p>
+{% endif %}
+
+{% if market.location_site %}
+<p><strong>Website:</strong><br>
+<a href="{{ market.location_site }}" target="_blank">
+    {{ market.location_site }}
+</a></p>
+{% endif %}
+
+<p><strong>Indoor Market:</strong>
+{{ market.location_indoor }}</p>
+
+<p><strong>Production Methods:</strong><br>
+{{ market.specialproductionmethods }}</p>
+
+<p><strong>Payment Accepted:</strong><br>
+{{ market.acceptedpayment }}</p>
+
+<p><strong>SNAP Accepted:</strong> {{ market.SNAP_option }}</p>
+<p><strong>FNAP:</strong> {{ market.FNAP }}</p>
+
+<a href="/">Back to search</a>
