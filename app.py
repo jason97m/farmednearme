@@ -37,26 +37,40 @@ def load_zip_latlon(zip_code):
 
 def load_markets():
     markets = []
-    with open(MARKETS_FILE, newline='', encoding="cp1252") as f:
+
+    with open(MARKETS_FILE, newline="", encoding="cp1252") as f:
         reader = csv.DictReader(f, delimiter=",")
+
         for row in reader:
-            # Clean lat/lon strings: remove whitespace and trailing commas
-            lat_str = row.get("location_y", "").strip().rstrip(',')
-            lon_str = row.get("location_x", "").strip().rstrip(',')
-            
-            if lat_str and lon_str:
-                try:
-                    markets.append({
-                        "name": row.get("listing_name", "").strip(),
-                        # Strip extra quotes from addresses
-                        "address": row.get("location_address", "").strip().strip('"'),
-                        "lat": float(lat_str),
-                        "lon": float(lon_str),
-                        "desc": row.get("location_desc", "").strip()
-                    })
-                except ValueError:
-                    # Skip rows with invalid numbers
-                    print(f"Skipping invalid row: {row}")
+            # Clean lat/lon strings
+            lat_str = row.get("location_y", "").strip().rstrip(",")
+            lon_str = row.get("location_x", "").strip().rstrip(",")
+
+            if not lat_str or not lon_str:
+                continue
+
+            try:
+                markets.append({
+                    "name": row.get("listing_name", "").strip(),
+
+                    # Address cleanup
+                    "address": row.get("location_address", "")
+                        .strip()
+                        .strip('"'),
+
+                    "lat": float(lat_str),
+                    "lon": float(lon_str),
+
+                    # 👇 Fields used by click-to-expand UI
+                    "location_desc": row.get("location_desc", "").strip(),
+                    "location_site": row.get("location_site", "").strip(),
+                    "location_site_otherdesc": row.get("location_site_otherdesc", "").strip()
+                })
+
+            except ValueError:
+                # Skip rows with bad coordinates
+                print(f"Skipping invalid coordinates: {row}")
+
     return markets
 
 # ---------------------------

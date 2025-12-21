@@ -11,3 +11,19 @@ input, button {
 .error {
     color: red;
 }
+.market {
+        cursor: pointer;
+        margin-bottom: 15px;
+}
+
+.details {
+        display: none;
+        margin-top: 8px;
+        padding-left: 10px;
+        border-left: 3px solid #ccc;
+        font-size: 0.95em;
+}
+
+.details.show {
+        display: block;
+}

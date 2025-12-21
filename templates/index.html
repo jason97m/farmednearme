@@ -1,34 +1,209 @@
-<!DOCTYPE html>
-<html>
+0~<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Farmed Near Me</title>
     <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 720px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* ===== Banner ===== */
+        .banner {
+            background: linear-gradient(135deg, #2f6f3e, #6fbf73);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .banner h1 {
+            margin: 0;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+        }
+
+        .banner p {
+            margin-top: 8px;
+            font-size: 1.05em;
+            opacity: 0.95;
+        }
+
+        /* ===== Form ===== */
+        form {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 200px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 1em;
+            background: #2f6f3e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #255a31;
+        }
+
+        /* ===== Results ===== */
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .market {
+            background: white;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transition: transform 0.1s ease;
+        }
+
+        .market:hover {
+            transform: scale(1.01);
+        }
+
+        .details {
+            display: none;
+            margin-top: 10px;
+            padding-left: 12px;
+            border-left: 3px solid #6fbf73;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .details.show {
+            display: block;
+        }
+
+        .details p {
+            margin: 5px 0;
+        }
+
+        .error {
+            text-align: center;
+            color: darkred;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Farmed Near Me 🌽</h1>
+<div class="container">
 
-<form method="POST">
-    <input type="text" name="zip" placeholder="Enter ZIP code" required>
-    <button type="submit">Find Markets</button>
-</form>
+    <div class="banner">
+        <h1>Farmed Near Me 🌽</h1>
+        <p>Find local farmers markets — fresh, nearby, and community-grown</p>
+    </div>
 
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %}
+    <form method="POST">
+        <input type="text" name="zip" placeholder="Enter ZIP code" required>
+        <button type="submit">Find Markets</button>
+    </form>
 
-{% if results %}
-<h2>Nearby Farmers Markets</h2>
-<ul>
-    {% for m in results %}
-    <li>
-        <strong>{{ m.name }}</strong><br>
-        {{ m.address }}<br>
-        {{ m.distance }} miles away
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if results %}
+        <h2>Nearby Farmers Markets</h2>
+
+        <ul id="market-list">
+            {% for m in results %}
+            <li class="market">
+                <strong>{{ m.name }}</strong><br>
+                {{ m.address }}<br>
+                {{ m.distance }} miles away
+
+                <div class="details">
+                    {% if m.location_desc or m.location_site or m.location_site_otherdesc %}
+
+                        {% if m.location_desc %}
+                            <p><strong>Location:</strong> {{ m.location_desc }}</p>
+                        {% endif %}
+
+                        {% if m.location_site %}
+                            <p><strong>Site Type:</strong> {{ m.location_site }}</p>
+                        {% endif %}
+
+                        {% if m.location_site_otherdesc %}
+                            <p><strong>Site Details:</strong> {{ m.location_site_otherdesc }}</p>
+                        {% endif %}
+
+                    {% else %}
+                        <p><em>No additional details available.</em></p>
+                    {% endif %}
+                </div>
+
+                <div class="details">
+                    {% if m.location_desc %}
+                        <p><strong>Location:</strong> {{ m.location_desc }}</p>
+                    {% endif %}
+
+                    {% if m.location_site %}
+                        <p><strong>Site Type:</strong> {{ m.location_site }}</p>
+                    {% endif %}
+
+                    {% if m.location_site_otherdesc %}
+                        <p><strong>Site Details:</strong> {{ m.location_site_otherdesc }}</p>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</div>
+
+<script>
+    // Attach click handlers AFTER the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".market").forEach(function (market) {
+            market.addEventListener("click", function () {
+                const details = market.querySelector(".details");
+                if (details) {
+                    details.classList.toggle("show");
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
+
