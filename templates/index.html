@@ -1,8 +1,9 @@
-0~<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Farmed Near Me</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
 
     <style>
@@ -35,13 +36,11 @@
         .banner h1 {
             margin: 0;
             font-size: 2.2em;
-            letter-spacing: 1px;
         }
 
         .banner p {
             margin-top: 8px;
             font-size: 1.05em;
-            opacity: 0.95;
         }
 
         /* ===== Form ===== */
@@ -50,6 +49,7 @@
             gap: 10px;
             justify-content: center;
             margin-bottom: 25px;
+            flex-wrap: wrap;
         }
 
         input[type="text"] {
@@ -92,11 +92,6 @@
             margin-bottom: 12px;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            transition: transform 0.1s ease;
-        }
-
-        .market:hover {
-            transform: scale(1.01);
         }
 
         .details {
@@ -105,20 +100,66 @@
             padding-left: 12px;
             border-left: 3px solid #6fbf73;
             font-size: 0.95em;
-            color: #333;
         }
 
         .details.show {
             display: block;
         }
 
-        .details p {
-            margin: 5px 0;
-        }
-
         .error {
             text-align: center;
             color: darkred;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        footer button {
+            background: none;
+            border: none;
+            color: #2f6f3e;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        footer button:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Modal ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .close {
+            float: right;
+            font-size: 1.4em;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .modal-content {
+                margin: 25% 15px;
+            }
         }
     </style>
 </head>
@@ -143,7 +184,7 @@
     {% if results %}
         <h2>Nearby Farmers Markets</h2>
 
-        <ul id="market-list">
+        <ul>
             {% for m in results %}
             <li class="market">
                 <strong>{{ m.name }}</strong><br>
@@ -152,35 +193,17 @@
 
                 <div class="details">
                     {% if m.location_desc or m.location_site or m.location_site_otherdesc %}
-
                         {% if m.location_desc %}
                             <p><strong>Location:</strong> {{ m.location_desc }}</p>
                         {% endif %}
-
                         {% if m.location_site %}
                             <p><strong>Site Type:</strong> {{ m.location_site }}</p>
                         {% endif %}
-
                         {% if m.location_site_otherdesc %}
                             <p><strong>Site Details:</strong> {{ m.location_site_otherdesc }}</p>
                         {% endif %}
-
                     {% else %}
                         <p><em>No additional details available.</em></p>
-                    {% endif %}
-                </div>
-
-                <div class="details">
-                    {% if m.location_desc %}
-                        <p><strong>Location:</strong> {{ m.location_desc }}</p>
-                    {% endif %}
-
-                    {% if m.location_site %}
-                        <p><strong>Site Type:</strong> {{ m.location_site }}</p>
-                    {% endif %}
-
-                    {% if m.location_site_otherdesc %}
-                        <p><strong>Site Details:</strong> {{ m.location_site_otherdesc }}</p>
                     {% endif %}
                 </div>
             </li>
@@ -188,22 +211,51 @@
         </ul>
     {% endif %}
 
+    <footer>
+        © 2025 Farmed Near Me ·
+        <button onclick="openAbout()">About Us</button>
+    </footer>
+
+</div>
+
+<!-- About Modal -->
+<div id="aboutModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAbout()">&times;</span>
+        <h2>About Farmed Near Me</h2>
+        <p>
+            Farmed Near Me helps connect communities with nearby farmers markets,
+            supporting local agriculture and access to fresh food.<br><br>
+            Contact:  contact@farmednear.me
+        </p>
+    </div>
 </div>
 
 <script>
-    // Attach click handlers AFTER the page loads
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".market").forEach(function (market) {
             market.addEventListener("click", function () {
                 const details = market.querySelector(".details");
-                if (details) {
-                    details.classList.toggle("show");
-                }
+                details.classList.toggle("show");
             });
         });
     });
+
+    function openAbout() {
+        document.getElementById("aboutModal").style.display = "block";
+    }
+
+    function closeAbout() {
+        document.getElementById("aboutModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("aboutModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
 </script>
 
 </body>
 </html>
-
